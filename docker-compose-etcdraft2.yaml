@@ -1,0 +1,85 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  orderer2.HBLPK.com:
+  orderer3.HBLPK.com:
+  orderer4.HBLPK.com:
+  orderer5.HBLPK.com:
+
+networks:
+  byfn:
+
+services:
+
+  orderer2.HBLPK.com:
+    extends:
+      file: base/peer-base.yaml
+      service: orderer-base
+    environment:
+      - ORDERER_GENERAL_LISTENPORT=8050
+    container_name: orderer2.HBLPK.com
+    networks:
+      - byfn
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer2.HBLPK.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer2.HBLPK.com/tls/:/var/hyperledger/orderer/tls
+      - orderer2.HBLPK.com:/var/hyperledger/production/orderer
+    ports:
+      - 8050:8050
+
+  orderer3.HBLPK.com:
+    extends:
+      file: base/peer-base.yaml
+      service: orderer-base
+    environment:
+      - ORDERER_GENERAL_LISTENPORT=9050
+    container_name: orderer3.HBLPK.com
+    networks:
+      - byfn
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/HBLPK.example.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer3.HBLPK.com/tls/:/var/hyperledger/orderer/tls
+      - orderer3.HBLPK.com:/var/hyperledger/production/orderer
+    ports:
+      - 9050:9050
+
+  orderer4.HBLPK.com:
+    extends:
+      file: base/peer-base.yaml
+      service: orderer-base
+    environment:
+      - ORDERER_GENERAL_LISTENPORT=10050
+    container_name: orderer4.HBLPK.com
+    networks:
+      - byfn
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer4.HBLPK.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer4.HBLPK.com/tls/:/var/hyperledger/orderer/tls
+      - orderer4.HBLPK.com:/var/hyperledger/production/orderer
+    ports:
+      - 10050:10050
+
+  orderer5.HBLPK.com:
+    extends:
+      file: base/peer-base.yaml
+      service: orderer-base
+    environment:
+      - ORDERER_GENERAL_LISTENPORT=11050
+    container_name: orderer5.HBLPK.com
+    networks:
+      - byfn
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer5.HBLPK.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/HBLPK.com/orderers/orderer5.HBLPK.com/tls/:/var/hyperledger/orderer/tls
+      - orderer5.HBLPK.com:/var/hyperledger/production/orderer
+    ports:
+      - 11050:11050

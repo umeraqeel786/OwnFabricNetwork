@@ -1,0 +1,87 @@
+================          1st step generate certificate   ==================
+(This will create all certificates for orderers and peers in crypto-config folder)
+
+../bin/cryptogen generate --config=./crypto-config.yaml
+export FABRIC_CFG_PATH=$PWD
+
+================          2nd step create genesis Block    ==================
+
+../bin/configtxgen -profile SampleMultiNodeEtcdRaft -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+
+
+================          3rd step create channel     ==================
+
+export CHANNEL_NAME=mychannel  && ../bin/configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+
+
+../bin/configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/hblpkMSPanchors.tx -channelID $CHANNEL_NAME -asOrg hblpkMSP
+
+
+../bin/configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/hbltrMSPanchors.tx -channelID $CHANNEL_NAME -asOrg hbltrMSP
+
+
+================          4th step     ==================
+
+
+docker-compose -f docker-compose-ca.yaml -f docker-compose-cli.yaml -f docker-compose-couch.yaml -f docker-compose-etcdraft2.yaml up -d
+
+
+
+docker exec -it cli bash
+
+  ==peer0===pk
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/users/Admin@hblpk.hbl.com/msp
+CORE_PEER_ADDRESS=peer0.hblpk.hbl.com:7051
+CORE_PEER_LOCALMSPID="hblpkMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer0.hblpk.hbl.com/tls/ca.crt
+
+  ==peer1===pk
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/users/Admin@hblpk.hbl.com/msp
+CORE_PEER_ADDRESS=peer1.hblpk.hbl.com:8051
+CORE_PEER_LOCALMSPID="hblpkMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer1.hblpk.hbl.com/tls/ca.crt
+
+
+export CHANNEL_NAME=mychannel
+peer channel create -o orderer.hbl.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem
+peer channel join -b mychannel.block
+
+
+   ==peer0===tr
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/users/Admin@hbltr.hbl.com/msp
+CORE_PEER_ADDRESS=peer0.hbltr.hbl.com:9051
+CORE_PEER_LOCALMSPID="hbltrMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer0.hbltr.hbl.com/tls/ca.crt
+peer channel join -b mychannel.block
+
+    ==peer1===tr
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/users/Admin@hbltr.hbl.com/msp
+CORE_PEER_ADDRESS=peer1.hbltr.hbl.com:10051
+CORE_PEER_LOCALMSPID="hbltrMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer1.hbltr.hbl.com/tls/ca.crt
+peer channel join -b mychannel.block
+
+
+
+
+peer channel update -o orderer.hbl.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/hbltrMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem
+
+
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/users/Admin@hblpk.hbl.com/msp
+CORE_PEER_ADDRESS=peer0.hblpk.hbl.com:7051
+CORE_PEER_LOCALMSPID="hblpkMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer0.hblpk.hbl.com/tls/ca.crt
+
+
+
+
+
+peer channel update -o orderer.hbl.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/hblpkMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem
+
+====================================================================================
+

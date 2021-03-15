@@ -1,0 +1,80 @@
+cd /opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode/fabcar/go
+GO111MODULE=on go mod vendor
+cd -
+peer lifecycle chaincode package mycc.tar.gz --path github.com/hyperledger/fabric-samples/chaincode/fabcar/go --lang golang --label mycc
+peer lifecycle chaincode install mycc.tar.gz
+
+
+========Add chaincode for peer0 org1(HBLPK)==================
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/users/Admin@hblpk.hbl.com/msp
+CORE_PEER_ADDRESS=peer0.hblpk.hbl.com:7051
+CORE_PEER_LOCALMSPID="hblpkMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer0.hblpk.hbl.com/tls/ca.crt
+peer lifecycle chaincode install mycc.tar.gz
+
+
+peer lifecycle chaincode approveformyorg --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --channelID mychannel --name mycc --version 1 --sequence 1 --waitForEvent --package-id mycc:03f240d7a8c6fb588acc30d22400472b71c3e664b8d18068a44cf5a2fbcd0b2d --signature-policy "OR ('hblpkMSP.peer','hbltrMSP.peer')"
+
+========Add chaincode for peer1 org1(HBLPK)==================
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/users/Admin@hblpk.hbl.com/msp
+CORE_PEER_ADDRESS=peer1.hblpk.hbl.com:8051
+CORE_PEER_LOCALMSPID="hblpkMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer1.hblpk.hbl.com/tls/ca.crt
+
+peer lifecycle chaincode approveformyorg --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --channelID mychannel --name mycc --version 1 --sequence 2 --waitForEvent --package-id mycc:03f240d7a8c6fb588acc30d22400472b71c3e664b8d18068a44cf5a2fbcd0b2d --signature-policy "OR ('hblpkMSP.peer','hbltrMSP.peer')"
+
+========Add chaincode for peer0 org2(HBLTR)==================
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/users/Admin@hbltr.hbl.com/msp
+CORE_PEER_ADDRESS=peer0.hbltr.hbl.com:9051
+CORE_PEER_LOCALMSPID="hbltrMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer0.hbltr.hbl.com/tls/ca.crt
+peer lifecycle chaincode install mycc.tar.gz
+
+
+peer lifecycle chaincode approveformyorg --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --channelID mychannel --name mycc --version 1 --sequence 1 --waitForEvent --package-id mycc:03f240d7a8c6fb588acc30d22400472b71c3e664b8d18068a44cf5a2fbcd0b2d  --signature-policy "OR ('hblpkMSP.peer','hbltrMSP.peer')"
+
+========Add chaincode for peer1 org1(HBLTR)==================
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/users/Admin@hbltr.hbl.com/msp
+CORE_PEER_ADDRESS=peer1.hbltr.hbl.com:10051
+CORE_PEER_LOCALMSPID="hbltrMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer1.hbltr.hbl.com/tls/ca.crt
+
+peer lifecycle chaincode approveformyorg --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --channelID mychannel --name mycc --version 1 --sequence 1 --waitForEvent --package-id mycc:03f240d7a8c6fb588acc30d22400472b71c3e664b8d18068a44cf5a2fbcd0b2d --signature-policy "OR ('hblpkMSP.peer','hbltrMSP.peer')"
+
+============commit chaincode==================
+
+
+peer lifecycle chaincode commit -o orderer.hbl.com:7050 --channelID $CHANNEL_NAME --name mycc --version 1.0 --sequence 1 --init-required --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --peerAddresses peer0.hblpk.hbl.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer0.hblpk.hbl.com/tls/ca.crt --peerAddresses peer0.hbltr.hbl.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer0.hbltr.hbl.com/tls/ca.crt
+
+
+
+
+peer lifecycle chaincode commit -o orderer.hbl.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --peerAddresses peer0.hblpk.hbl.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer0.hblpk.hbl.com/tls/ca.crt --peerAddresses peer0.hbltr.hbl.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer0.hbltr.hbl.com/tls/ca.crt --channelID mychannel --name mycc --version 1 --sequence 2 --signature-policy "OR ('hblpkMSP.peer','hbltrMSP.peer')"
+
+peer lifecycle chaincode querycommitted -o orderer.hbl.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --channelID mychannel --name mycc --output json
+
+
+
+peer lifecycle chaincode commit -o orderer.hbl.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --peerAddresses peer1.hblpk.hbl.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer1.hblpk.hbl.com/tls/ca.crt --peerAddresses peer1.hbltr.hbl.com:10051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer1.hbltr.hbl.com/tls/ca.crt --channelID mychannel --name mycc --version 1 --sequence 1 --signature-policy "OR ('hblpkMSP.peer','hbltrMSP.peer')"
+peer lifecycle chaincode querycommitted -o orderer.hbl.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem --channelID mychannel --name mycc --output json
+
+
+
+============invoke chaincode =================
+
+peer chaincode invoke -o orderer.hbl.com:7050 --isInit --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem -C $CHANNEL_NAME -n mycc --peerAddresses peer0.hblpk.hbl.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hblpk.hbl.com/peers/peer0.hblpk.hbl.com/tls/ca.crt --peerAddresses peer0.hbltr.hbl.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hbltr.hbl.com/peers/peer0.hbltr.hbl.com/tls/ca.crt -c '{"Args":["CreateCar","a","c","b","c"]}' --waitForEvent
+
+peer chaincode invoke -o orderer.hbl.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/hbl.com/orderers/orderer.hbl.com/msp/tlscacerts/tlsca.hbl.com-cert.pem -C mychannel -n mycc -c '{"Args":["CreateCar","a","c","b","c"]}'
+
+
+============query chaincode ===================
+
+peer chaincode query -C mychannel -n mycc -c '{"Args":["QueryAllCars"]}'
+peer chaincode query -C mychannel -n mycc -c '{"Args":[""]}'
+
+
+
