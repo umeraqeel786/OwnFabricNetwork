@@ -1,6 +1,6 @@
-**Hyperledger Fabric Network**
+# **Hyperledger Fabric Network**
 
-This my own configure network .You can use this and change the organization name and var and free to GO!
+### This my own configure network .You can use this and change the names and good to GO!
 
 You can use Fabric samples to get started working with Hyperledger Fabric, explore important Fabric features, and learn how to build applications that can interact with blockchain networks using the Fabric SDKs. To learn more about Hyperledger Fabric, visit the Fabric documentation.
 Getting started with the Fabric samples
