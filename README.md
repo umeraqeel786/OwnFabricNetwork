@@ -7,7 +7,7 @@ Getting started with the Fabric samples
 
 - [x] Finish my changes
 - [x] Push my commits to GitHub
-- [ ] Open a pull request
+- [x] Open a pull request
 
 
 To use the Fabric samples, you need to download the Fabric Docker images and the Fabric CLI tools. First, make sure that you have installed all of the Fabric prerequisites. You can then follow the instructions to Install the Fabric Samples, Binaries, and Docker Images in the Fabric documentation. In addition to downloading the Fabric images and tool binaries, the Fabric samples will also be cloned to your local machine.
